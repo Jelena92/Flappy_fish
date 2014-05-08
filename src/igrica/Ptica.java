@@ -4,14 +4,15 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 /**
  *
  * @author Administrator
  */
 public class Ptica extends Rectangle.Double implements GameObjects{
 
-    private final int w = 40;
-    private final int h = 20;
+    private final int w = 30;
+    private final int h = 30;
        
     private  Board board;
     private final Color fillColor = Color.RED;
@@ -26,11 +27,12 @@ public class Ptica extends Rectangle.Double implements GameObjects{
     private int directionX;
     private int directionY;
     
-    private Ellipse2D.Double ellipseForDrawing;
-    
+
+    private Rectangle.Double rectangleForDrawing;
     
     public Ptica (Board board) {
         this.board = board;
+        reset();
         width = w;
         height = h;
          directionX = 1;
@@ -39,18 +41,16 @@ public class Ptica extends Rectangle.Double implements GameObjects{
     
     @Override
     public void draw(Graphics2D g2) {
-        ellipseForDrawing = new Ellipse2D.Double(80, 200, w, h);
         
-        Ellipse2D.Double rex = new Ellipse2D.Double(100, 200,10, 10);
-        
+        rectangleForDrawing = new Rectangle2D.Double(x, y, w, h);        
+       
         g2.setPaint(fillColor);
-        g2.fill(ellipseForDrawing);
+        g2.fill(rectangleForDrawing);
         
         g2.setPaint(borderColor);
-        g2.draw(ellipseForDrawing);
+        g2.draw(rectangleForDrawing);
         
-        g2.fill(rex);
-        g2.draw(rex);
+        
     }
     
     /**
@@ -66,6 +66,11 @@ public class Ptica extends Rectangle.Double implements GameObjects{
     @Override
     public void move() {
        
+    }
+
+    private void reset() {
+        x = board.PANEL_WIDTH/6 + w/2;
+        y = board.PANEL_HEIGHT/2 - h/2;
     }
     
     
