@@ -53,7 +53,10 @@ public class Board extends JPanel implements Runnable {
         message = "Flappy Bird";
         
         ball = new Ptica(this);
-                
+        
+        
+        addKeyListener(new GameKeyAdapter()); 
+        
         runner = new Thread(this);
         runner.start();
     }
@@ -116,5 +119,25 @@ public class Board extends JPanel implements Runnable {
        inGame = true;
     }
     
- 
+  private class GameKeyAdapter extends KeyAdapter {
+    
+        @Override
+        public void keyPressed(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+            
+            if (keyCode == KeyEvent.VK_UP)
+                ball.moveUp();
+               
+                
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+             int keyCode = e.getKeyCode();
+            
+            if (keyCode == KeyEvent.VK_UP)
+              ball.stopMoving();
+        }
+
+    }
 }
