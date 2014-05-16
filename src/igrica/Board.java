@@ -5,10 +5,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 /**
  *
@@ -21,19 +23,22 @@ public class Board extends JPanel implements Runnable {
      /**
      * Širina table
      */
-    public final int PANEL_WIDTH = 350;
+    public final int PANEL_WIDTH = 800;
     /**
      * Visina table
      */
-    public final int PANEL_HEIGHT = 450;
+    public final int PANEL_HEIGHT = 350;
     
     final Color BACKGROUND_COLOR = Color.CYAN;
     final Thread runner;
     
-      Boolean inGame;
+    private Image image;
+ 
+    Boolean inGame;
       
     // Objekti u igri
-      Ptica ball;
+      Riba riba;
+      Prepreke gornjaP, donjaP;
    
     String message;
     
@@ -51,10 +56,11 @@ public class Board extends JPanel implements Runnable {
         
         inGame = false;
         message = "Flappy Bird";
-        
-        ball = new Ptica(this);
-        
-        
+
+        riba = new Riba(this);
+        gornjaP = new Prepreke (this, PANEL_WIDTH - Prepreke.w/2, 0);
+        donjaP= new Prepreke(this, PANEL_WIDTH - Prepreke.w/2, PANEL_HEIGHT - Prepreke.h);
+
         addKeyListener(new GameKeyAdapter()); 
         
         runner = new Thread(this);
@@ -79,10 +85,18 @@ public class Board extends JPanel implements Runnable {
             g2.drawRect(0, 0, PANEL_WIDTH, PANEL_HEIGHT);
           
 
-            // Iscrtaj sve objekte
-
-            ball.draw(g2);
+         // Slika u pozadini
+        ImageIcon welcome = new ImageIcon(getClass().getResource("background.PNG"));
+        g.drawImage(welcome.getImage(), 0, 0, getWidth(), getHeight(), null);
+        setForeground(Color.WHITE);
+        
+        
+           // Iscrtaj sve objekte
+            riba.draw(g2);
+            gornjaP.draw(g2);
+            donjaP.draw(g2);
                            
+   
 
             // Sinhronizovanje sa grafičkom kartom
             Toolkit.getDefaultToolkit().sync();
@@ -90,13 +104,13 @@ public class Board extends JPanel implements Runnable {
             // Optimizacija upotrebe RAM-a, 
             g.dispose();
         } else {
-            int messageWidth = getFontMetrics(getFont()).stringWidth(message);
-            g2.drawString(message, PANEL_WIDTH/2 - messageWidth/2, PANEL_HEIGHT/2);
+             image = new ImageIcon(getClass().getResource("flappy_fish.png")).getImage();
+            g2.drawImage(image, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, null);
         }
     }
 
  private void update() {
-        ball.move();
+        riba.move();
         
     }
 
@@ -126,7 +140,7 @@ public class Board extends JPanel implements Runnable {
         int keyCode = e.getKeyCode();
             
             if (keyCode == KeyEvent.VK_UP)
-                ball.moveUp();
+                riba.moveUp();
                
                 
         }
@@ -136,7 +150,7 @@ public class Board extends JPanel implements Runnable {
              int keyCode = e.getKeyCode();
             
             if (keyCode == KeyEvent.VK_UP)
-              ball.stopMoving();
+              riba.stopMoving();
         }
 
     }

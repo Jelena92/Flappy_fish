@@ -9,11 +9,11 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Administrator
  */
-public class Ptica extends Rectangle.Double implements GameObjects{
+public class Riba extends Rectangle.Double implements GameObjects{
 
    
-    private final int w = 30;
-    private final int h = 30;
+    private final int w = 20;
+    private final int h = 20;
    private final int g=2;
        
     private  Board board;
@@ -21,20 +21,19 @@ public class Ptica extends Rectangle.Double implements GameObjects{
     private final Color borderColor = Color.BLACK;
     
     
-   // Predstavljaju intenzitet brzine po x i po y koordinati
-    private int dx=1;
-    private int dy=6;
+   // Predstavljaju intenzitet brzine po x i po y koordinata
+    private int dy=11;
     
     // Predstavljaju smjer brzine  po y koordinati
     private int directionX;
     private int directionY;
     
-    enum MovingState { STANDING, MOVING_UP, MOVING_DOWN}
+    enum MovingState { STANDING, MOVING_UP}
     private MovingState state;
     
     private Rectangle.Double rectangleForDrawing;
     
-    public Ptica (Board board) {
+    public Riba (Board board) {
         this.board = board;
         reset();
         width = w;
@@ -43,7 +42,7 @@ public class Ptica extends Rectangle.Double implements GameObjects{
         directionY = 1;
     }
     
-     public Ptica(Board board, int x, int y) {
+     public Riba(Board board, int x, int y) {
         this.board = board;
         this.x = x;
         this.y = y;
@@ -91,6 +90,7 @@ public class Ptica extends Rectangle.Double implements GameObjects{
         
         if (state == MovingState.MOVING_UP)
             y-=dy;
+        
         
         if(y+w >board.PANEL_HEIGHT)
            reset();
