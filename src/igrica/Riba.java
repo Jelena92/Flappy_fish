@@ -23,12 +23,9 @@ public class Riba  {
     private final int h = 40;
     private int width;
     private int height;
-    private final double g=2;
+    private final double g=3.1;
     private Image image;
     Board board;
-    
-  
-    
     
    // Predstavljaju intenzitet brzine po x i po y koordinata
     private int dy=8;
@@ -59,7 +56,7 @@ public class Riba  {
     }
     
     /**
-     * Postavlja stanje kretanja ptice u stanje mirovabnja.
+     * Postavlje kretanja ptice u stanje mirovanja
      */
     public void stopMoving() {
         state = MovingState.STANDING;
@@ -84,20 +81,23 @@ public class Riba  {
         {
             y+=g;
         }
-        else{
-            reset();
-            board.inGame=true;
+        else 
+        {   
+          reset();
+           
         }
             if (state == MovingState.MOVING_UP)
              y-=dy;
-            
-           
-    }
+   
+    } 
         
-        public void reset(){
-           y+=g;
-            board.deathMessage = "Pritisni strjelicu ka goe";
+            public void reset()
+            {
+             x=800/4;
+             y=350/3;
+         
+            }
+
             
-        }
-        
+            
 }
