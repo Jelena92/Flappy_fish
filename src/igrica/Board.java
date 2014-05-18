@@ -29,12 +29,12 @@ public class Board extends JPanel implements Runnable {
      */
     public final int PANEL_HEIGHT = 350;
     
-    final Color BACKGROUND_COLOR = Color.CYAN;
-    final Thread runner;
+      final Color BACKGROUND_COLOR = Color.CYAN;
+      final Thread runner;
     
-    private Image image;
- 
-    Boolean inGame;
+      private Image image;
+        static String deathMessage = "" ; 
+      Boolean inGame;
       
     // Objekti u igri
       Riba riba;
@@ -57,7 +57,7 @@ public class Board extends JPanel implements Runnable {
         inGame = false;
         message = "Flappy Bird";
 
-        riba = new Riba(this);
+        riba = new Riba(PANEL_WIDTH/4, PANEL_HEIGHT/3);
         gornjaP = new Prepreke (this, PANEL_WIDTH - Prepreke.w/2, 0);
         donjaP= new Prepreke(this, PANEL_WIDTH - Prepreke.w/2, PANEL_HEIGHT - Prepreke.h);
 
@@ -90,7 +90,6 @@ public class Board extends JPanel implements Runnable {
         g.drawImage(welcome.getImage(), 0, 0, getWidth(), getHeight(), null);
         setForeground(Color.WHITE);
         
-        
            // Iscrtaj sve objekte
             riba.draw(g2);
             gornjaP.draw(g2);
@@ -113,7 +112,7 @@ public class Board extends JPanel implements Runnable {
         riba.move();
         
     }
-
+ 
     @Override
     public void run() {
                
@@ -130,7 +129,14 @@ public class Board extends JPanel implements Runnable {
     }
 
     void startGame() {
-       inGame = true;
+      
+      inGame = true;
+          riba = new Riba(PANEL_WIDTH/4, PANEL_HEIGHT/3); 
+    }
+    
+    public void stopGame() {
+        inGame = false;
+          riba = new Riba(PANEL_WIDTH/4, PANEL_HEIGHT/3);  
     }
     
   private class GameKeyAdapter extends KeyAdapter {
@@ -141,8 +147,7 @@ public class Board extends JPanel implements Runnable {
             
             if (keyCode == KeyEvent.VK_UP)
                 riba.moveUp();
-               
-                
+         
         }
 
         @Override
