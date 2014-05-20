@@ -7,20 +7,20 @@ package igrica;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import static javax.swing.SpringLayout.WIDTH;
 
 
 public class Prepreke extends Rectangle.Double implements GameObjects {
     
-     enum MovingState { MOVING_LEFT }
     /**
      * Širina 
      */
     public static final int w = 40;
     /**
-     * Visina reketa
+     * Visina 
      */
-    public static final int h = 180;
-    
+    public static final int h = 135;
+    public int dist=80;
     private int dx = 10;
     
     private Board board;
@@ -34,9 +34,11 @@ public class Prepreke extends Rectangle.Double implements GameObjects {
         this.height = h;
         }
 
+        
     @Override
     public void move() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       if(x<800)
+               x -=dx;		
     }
 
     @Override
