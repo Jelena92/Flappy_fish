@@ -24,11 +24,11 @@ public class Board extends JPanel implements Runnable {
     /**
      * Širina table
      */
-    public final int PANEL_WIDTH = 800;
+    public final int PANEL_WIDTH = 600;
     /**
      * Visina table
      */
-    public final int PANEL_HEIGHT = 350;
+    public final int PANEL_HEIGHT = 600;
 
     final Color BACKGROUND_COLOR = Color.CYAN;
     final Thread runner;
@@ -38,9 +38,7 @@ public class Board extends JPanel implements Runnable {
 
     // Objekti u igri
     Riba riba;
-    Prepreke gornjaP, donjaP;
-
-    String message;
+    Prepreke pre1, pre2, pre3, pre4;
 
     /**
      * Podrazumjevani konstruktor. Postavlja veličinu table, boju pozadine i
@@ -55,11 +53,12 @@ public class Board extends JPanel implements Runnable {
         setDoubleBuffered(true);
 
         inGame = false;
-        message = "Flappy Bird";
 
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        gornjaP = new Prepreke(this, PANEL_WIDTH, 0);
-        donjaP = new Prepreke(this, PANEL_WIDTH, PANEL_HEIGHT - Prepreke.h);
+        pre1 = new Prepreke(this, PANEL_WIDTH);
+        pre2 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2));
+        pre3 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
+        pre4 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
 
         addKeyListener(new GameKeyAdapter());
 
@@ -88,8 +87,10 @@ public class Board extends JPanel implements Runnable {
 
             // Iscrtaj sve objekte
             riba.draw(g2);
-            gornjaP.draw(g2);
-            donjaP.draw(g2);
+            pre1.draw(g2);
+            pre2.draw(g2);
+            pre3.draw(g2);
+            pre4.draw(g2);
 
             //Font kojim se ispisuje text na ekranu           
             g2.setFont(new Font("comicsans", Font.BOLD, 20));
@@ -108,8 +109,10 @@ public class Board extends JPanel implements Runnable {
 
     private void update() {
         riba.move();
-        gornjaP.move();
-        donjaP.move();
+        pre1.move();
+        pre2.move();
+        pre3.move();
+        pre4.move();
 
     }
 
@@ -129,20 +132,23 @@ public class Board extends JPanel implements Runnable {
     }
 
     void startGame() {
-
-        riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        gornjaP = new Prepreke(this, PANEL_WIDTH, 0);
-        donjaP = new Prepreke(this, PANEL_WIDTH, PANEL_HEIGHT - Prepreke.h);
         inGame = true;
-        //ispisivanje poruke na ekranu, gdje poruka ostaje ispisana 3000 milisekundi
+        riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
+        pre1 = new Prepreke(this, PANEL_WIDTH);
+        pre2 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2));
+        pre3 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
+        pre4 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
 
     }
 
     public void stopGame() {
         inGame = false;
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        gornjaP = new Prepreke(this, PANEL_WIDTH, 0);
-        donjaP = new Prepreke(this, PANEL_WIDTH, PANEL_HEIGHT - Prepreke.h);
+        pre1 = new Prepreke(this, PANEL_WIDTH);
+        pre2 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2));
+        pre3 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
+        pre4 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2) + (PANEL_WIDTH /2));
+
     }
 
     private class GameKeyAdapter extends KeyAdapter {

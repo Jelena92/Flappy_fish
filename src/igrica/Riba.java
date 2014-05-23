@@ -30,8 +30,6 @@ public class Riba {
     private Image image;
     Board board;
 
-    private Rectangle.Double rectangleForDrawing;
-
     public Riba(Board board, int x, int y) {
         this.board = board;
         this.x = x;
@@ -52,7 +50,7 @@ public class Riba {
     }
 
     public void moveUp() {
-        dy = -12;
+        dy = -13;
     }
 
     /**
