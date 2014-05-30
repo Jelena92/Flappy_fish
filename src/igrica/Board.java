@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -35,10 +36,12 @@ public class Board extends JPanel implements Runnable {
     static String Poruka = "";
     private Image image;
     Boolean inGame;
+    
+    long frames;
 
     // Objekti u igri
     Riba riba;
-    Prepreke pre1, pre2, pre3, pre4;
+    ArrayList<Prepreka> prepreke;
 
     /**
      * Podrazumjevani konstruktor. Postavlja veličinu table, boju pozadine i
@@ -55,10 +58,8 @@ public class Board extends JPanel implements Runnable {
         inGame = false;
 
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        pre1 = new Prepreke(this, PANEL_WIDTH);
-        pre2 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2));
-        pre3 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
-        pre4 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
+        
+        prepreke = new ArrayList<>();
 
         addKeyListener(new GameKeyAdapter());
 
@@ -87,10 +88,11 @@ public class Board extends JPanel implements Runnable {
 
             // Iscrtaj sve objekte
             riba.draw(g2);
-            pre1.draw(g2);
-            pre2.draw(g2);
-            pre3.draw(g2);
-            pre4.draw(g2);
+            
+            int d = prepreke.size();
+            for (int i = 0; i < d; i++) {
+                prepreke.get(i).draw(g2);
+            }
 
             //Font kojim se ispisuje text na ekranu           
             g2.setFont(new Font("comicsans", Font.BOLD, 20));
@@ -109,19 +111,43 @@ public class Board extends JPanel implements Runnable {
 
     private void update() {
         riba.move();
-        pre1.move();
-        pre2.move();
-        pre3.move();
-        pre4.move();
-
+        
+        int d = prepreke.size();
+        for (int i = 0; i < d; i++) {
+            prepreke.get(i).move();
+        }
+    }
+    
+    private void addObstacle() {
+        prepreke.add(new Prepreka(this));
+    }
+    
+    private void detectCollision() {
+        int d = prepreke.size();
+        for (int i = 0; i < d; i++) {
+            if(prepreke.get(i).intersectsWithFish(riba))
+                stopGame();
+        }
     }
 
     @Override
     public void run() {
 
         while (true) {
-            update();
-            repaint();
+            if (inGame) {
+                frames++;
+
+                if (frames == 20) {
+                    addObstacle();
+                    frames = 0;
+
+                    System.out.println(prepreke.size());
+                }
+
+                update();
+                detectCollision();
+                repaint();
+            }
 
             try {
                 Thread.sleep(40);
@@ -134,21 +160,12 @@ public class Board extends JPanel implements Runnable {
     void startGame() {
         inGame = true;
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        pre1 = new Prepreke(this, PANEL_WIDTH);
-        pre2 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2));
-        pre3 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
-        pre4 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
-
+        frames = 0;
     }
 
     public void stopGame() {
         inGame = false;
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        pre1 = new Prepreke(this, PANEL_WIDTH);
-        pre2 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2));
-        pre3 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2));
-        pre4 = new Prepreke(this, PANEL_WIDTH + (PANEL_WIDTH / 2) + (PANEL_WIDTH / 2) + (PANEL_WIDTH /2));
-
     }
 
     private class GameKeyAdapter extends KeyAdapter {

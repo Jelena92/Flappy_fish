@@ -45,7 +45,7 @@ public class Riba {
         g2.drawImage(image, x, y, width, height, null);
     }
 
-    public Rectangle2D getBounds() {
+    public Rectangle2D.Double getBounds() {
         return new Rectangle2D.Double(x, y, w, h);
     }
 
