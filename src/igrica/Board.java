@@ -36,6 +36,7 @@ public class Board extends JPanel implements Runnable {
     static String Poruka = "";
     private Image image;
     Boolean inGame;
+    Boolean paused;
     
     long frames;
 
@@ -56,6 +57,7 @@ public class Board extends JPanel implements Runnable {
         setDoubleBuffered(true);
 
         inGame = false;
+        paused = true;
 
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
         
@@ -75,7 +77,6 @@ public class Board extends JPanel implements Runnable {
 
         if (inGame) {
             // Savjeti pri iscrtavanju
-
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -134,14 +135,12 @@ public class Board extends JPanel implements Runnable {
     public void run() {
 
         while (true) {
-            if (inGame) {
+            if (inGame && !paused) {
                 frames++;
 
-                if (frames == 20) {
+                if (frames == 40) {
                     addObstacle();
-                    frames = 0;
-
-                    System.out.println(prepreke.size());
+                    frames = 0; 
                 }
 
                 update();
@@ -160,12 +159,14 @@ public class Board extends JPanel implements Runnable {
     void startGame() {
         inGame = true;
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
+        prepreke = new ArrayList<>();
         frames = 0;
+        repaint();
     }
 
     public void stopGame() {
         inGame = false;
-        riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
+        paused=true;
     }
 
     private class GameKeyAdapter extends KeyAdapter {
@@ -173,9 +174,10 @@ public class Board extends JPanel implements Runnable {
         @Override
         public void keyPressed(KeyEvent e) {
             int keyCode = e.getKeyCode();
-
+            
             if (keyCode == KeyEvent.VK_SPACE) {
                 riba.moveUp();
+                paused = false;
             }
         }
     }

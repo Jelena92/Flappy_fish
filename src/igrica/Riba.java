@@ -20,6 +20,7 @@ public class Riba {
 
     private int x;
     private int y;
+    enum MovingState{STANDING};
 
     private final int w = 40;
     private final int h = 40;
@@ -29,6 +30,7 @@ public class Riba {
     private final double g = 1;
     private Image image;
     Board board;
+    MovingState state;
 
     public Riba(Board board, int x, int y) {
         this.board = board;
@@ -56,25 +58,27 @@ public class Riba {
     /**
      * Vrši pomjeranje ptice
      */
-    public void move() {
+    public void move() { 
         if ((y > 0) && (y + w < board.PANEL_HEIGHT)) {
             dy += g;
             y += dy;
         } else {
-
-            reset();
+            board.stopGame();
         }
-
     }
 
+
+
     public void reset() {
+
         x = board.PANEL_WIDTH / 4;
         y = board.PANEL_HEIGHT / 3;
-        dy = 2;
+        dy = 0;
 
         Poruka = " Pritisni SPACE za skakanaje";
         Timer deathTimer = new Timer(3000, new ActionListener() {
 
+            @Override
             public void actionPerformed(ActionEvent event) {
 
                 Poruka = "";
