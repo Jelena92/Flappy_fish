@@ -37,6 +37,7 @@ public class Board extends JPanel implements Runnable {
     private Image image;
     Boolean inGame;
     Boolean paused;
+    static int score =0;
     
     long frames;
 
@@ -97,7 +98,10 @@ public class Board extends JPanel implements Runnable {
 
             //Font kojim se ispisuje text na ekranu           
             g2.setFont(new Font("comicsans", Font.BOLD, 20));
+            	g2.drawString("" + score, PANEL_WIDTH/ 2 - 20, 100);          
             g2.drawString(Poruka, PANEL_WIDTH * 4 / 20, PANEL_HEIGHT / 10);
+            
+            
 
             // Sinhronizovanje sa grafičkom kartom
             Toolkit.getDefaultToolkit().sync();
@@ -117,6 +121,11 @@ public class Board extends JPanel implements Runnable {
         for (int i = 0; i < d; i++) {
             prepreke.get(i).move();
         }
+        for (int i = 0; i < d; i++) {
+            if(prepreke.get(i).vrijednostx()==riba.x)
+                score+=1;
+    }
+    
     }
     
     private void addObstacle() {
@@ -129,7 +138,10 @@ public class Board extends JPanel implements Runnable {
             if(prepreke.get(i).intersectsWithFish(riba))
                 stopGame();
         }
+        
+        
     }
+
 
     @Override
     public void run() {
@@ -142,7 +154,7 @@ public class Board extends JPanel implements Runnable {
                     addObstacle();
                     frames = 0; 
                 }
-
+               
                 update();
                 detectCollision();
                 repaint();
@@ -161,6 +173,7 @@ public class Board extends JPanel implements Runnable {
         riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
         prepreke = new ArrayList<>();
         frames = 0;
+        score=0;
         repaint();
     }
 

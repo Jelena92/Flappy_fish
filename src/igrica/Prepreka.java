@@ -29,7 +29,8 @@ public class Prepreka implements GameObjects {
         this.x = board.PANEL_WIDTH;
         this.y = rnd.nextInt(board.PANEL_HEIGHT-400)+200;
     }
-
+    
+ 
     @Override
     public void move() {
         x -= brzina;
@@ -48,5 +49,8 @@ public class Prepreka implements GameObjects {
         
         return ribaBounds.intersects(gornji) || ribaBounds.intersects(donji);
     }
-
+    
+    public int vrijednostx(){
+            return x;
+    }
 }

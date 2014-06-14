@@ -18,7 +18,7 @@ import javax.swing.Timer;
  */
 public class Riba {
 
-    private int x;
+    int x;
     private int y;
     enum MovingState{STANDING};
 
