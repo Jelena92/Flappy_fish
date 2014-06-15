@@ -1,6 +1,8 @@
 package igrica;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,10 +14,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import static java.lang.System.in;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.Timer;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -36,15 +59,19 @@ public class Board extends JPanel implements Runnable {
     final Thread runner;
     static String message = "";
     private Image image;
+
     Boolean inGame;
     Boolean paused;
     static int score = 0;
+    private String playerName;
 
     long frames;
 
     // Objekti u igri
     Fish fish;
     ArrayList<Obstacle> obstacles;
+    private Component frame;
+    
 
     /**
      * Podrazumjevani konstruktor. Postavlja veličinu table, boju pozadine i
@@ -101,13 +128,15 @@ public class Board extends JPanel implements Runnable {
             g2.setFont(new Font("comicsans", Font.PLAIN, 30));
             g2.setColor(Color.WHITE);
             g2.drawString(" Score: " + score, 30, 40);
-            g2.drawString(message, PANEL_WIDTH * 4 / 20, PANEL_HEIGHT / 10);
+            g2.drawString(" Name : " + playerName, 30, 65);
+            g2.drawString(message, PANEL_WIDTH / 4, 100);
 
             // Sinhronizovanje sa grafičkom kartom
             Toolkit.getDefaultToolkit().sync();
 
             // Optimizacija upotrebe RAM-a, 
             g.dispose();
+
         } else {
             image = new ImageIcon(getClass().getResource("Pocetak.PNG")).getImage();
             g2.drawImage(image, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, null);
@@ -147,6 +176,15 @@ public class Board extends JPanel implements Runnable {
 
     }
 
+    public void read() throws IOException {
+        try (BufferedReader in = new BufferedReader(new FileReader("src/igrica/saveFile.txt"))) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                System.out.println(line);
+            }
+        }
+    }
+
     @Override
     public void run() {
 
@@ -179,6 +217,8 @@ public class Board extends JPanel implements Runnable {
         frames = 0;
         score = 0;
 
+        playerName = JOptionPane.showInputDialog(null, "Please, enter your name:", "Flappy fish", JOptionPane.INFORMATION_MESSAGE);
+
         message = "Use SPACE for jump ";
         Timer deathTimer = new Timer(3000, new ActionListener() {
             @Override
@@ -188,12 +228,58 @@ public class Board extends JPanel implements Runnable {
         ;
         });
  		deathTimer.start();
+
+        if (playerName == null) {
+            stopGame();
+        }
         repaint();
     }
 
+    //Čuvanje razultata u datoteci
+    private void save_file(String name_fale, List<String> scores) throws IOException {
+        File file = new File(name_fale);
+        if (!file.exists()) { //Ako ne postoji datoteka, kreirati je
+            file.createNewFile();
+        }
+        try (PrintWriter writer = new PrintWriter(file, "UTF-8")) {
+            for (String score : scores) {
+                writer.println(score);
+            }
+        }
+    }
+
+    // postaviti u listu rezultate(punjenje liste)
+    private List<String> load(String file_name) throws FileNotFoundException {
+        File file = new File(file_name);
+        if (!file.exists()) {
+            //ako ne postoji datotetka, izbaci izuzetak
+            throw new FileNotFoundException();
+        }
+
+        List<String> scores = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(file)) { //kreiranje citaoca koji unosi podatke
+            while (scanner.hasNextLine()) {
+                scores.add(scanner.nextLine()); //postavljanje rezultata u listu
+            }
+        }
+
+        return scores;
+    }
+
+   
+
     public void stopGame() {
         inGame = false;
-        message = ("You won " + score + " points");
+        JOptionPane.showMessageDialog(frame, "" + playerName + " won " + score + " points.", "Flappy fish", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            List<String> scores = load("src/igrica/saveFile.txt");
+            scores.add(playerName + " - " + score);
+            save_file("src/igrica/saveFile.txt", scores); //igra je sacuvana
+        } catch (IOException ex) { //ako ne moze da bude prikazano, objavi gresku
+            System.out.println("Error : " + ex);
+        }
+
         paused = true;
     }
 

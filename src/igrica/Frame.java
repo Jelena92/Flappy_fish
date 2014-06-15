@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -38,6 +41,18 @@ public class Frame extends JFrame{
         JMenu gameMenu = new JMenu("Game");
         
         // Napravimo stavku za meni
+        JMenuItem results = new JMenuItem("Results");
+        results.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    board.read();
+                } catch (IOException ex) {
+                    Logger.getLogger(Frame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         JMenuItem newGame = new JMenuItem("New game");
         newGame.addActionListener(new ActionListener() {
 
@@ -48,6 +63,7 @@ public class Frame extends JFrame{
         });
         // Dodamo stavku u meni
         gameMenu.add(newGame);
+        gameMenu.add(results);
         
         // Dodamo meni u liniju menija
         menuBar.add(gameMenu);
