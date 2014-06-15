@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
 /**
  *
  * @author Administrator
@@ -33,17 +34,17 @@ public class Board extends JPanel implements Runnable {
 
     final Color BACKGROUND_COLOR = Color.CYAN;
     final Thread runner;
-    static String Poruka = "";
+    static String message = "";
     private Image image;
     Boolean inGame;
     Boolean paused;
-    static int score =0;
-    
+    static int score = 0;
+
     long frames;
 
     // Objekti u igri
-    Riba riba;
-    ArrayList<Prepreka> prepreke;
+    Fish fish;
+    ArrayList<Obstacle> obstacles;
 
     /**
      * Podrazumjevani konstruktor. Postavlja veličinu table, boju pozadine i
@@ -60,9 +61,9 @@ public class Board extends JPanel implements Runnable {
         inGame = false;
         paused = true;
 
-        riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        
-        prepreke = new ArrayList<>();
+        fish = new Fish(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
+
+        obstacles = new ArrayList<>();
 
         addKeyListener(new GameKeyAdapter());
 
@@ -89,19 +90,18 @@ public class Board extends JPanel implements Runnable {
             g2.drawImage(image, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, null);
 
             // Iscrtaj sve objekte
-            riba.draw(g2);
-            
-            int d = prepreke.size();
+            fish.draw(g2);
+
+            int d = obstacles.size();
             for (int i = 0; i < d; i++) {
-                prepreke.get(i).draw(g2);
+                obstacles.get(i).draw(g2);
             }
 
             //Font kojim se ispisuje text na ekranu           
-            g2.setFont(new Font("comicsans", Font.BOLD, 20));
-            	g2.drawString("" + score, PANEL_WIDTH/ 2 - 20, 100);          
-            g2.drawString(Poruka, PANEL_WIDTH * 4 / 20, PANEL_HEIGHT / 10);
-            
-            
+            g2.setFont(new Font("comicsans", Font.PLAIN, 30));
+            g2.setColor(Color.WHITE);
+            g2.drawString(" Score: " + score, 30, 40);
+            g2.drawString(message, PANEL_WIDTH * 4 / 20, PANEL_HEIGHT / 10);
 
             // Sinhronizovanje sa grafičkom kartom
             Toolkit.getDefaultToolkit().sync();
@@ -109,39 +109,43 @@ public class Board extends JPanel implements Runnable {
             // Optimizacija upotrebe RAM-a, 
             g.dispose();
         } else {
-            image = new ImageIcon(getClass().getResource("flappy_fish.png")).getImage();
+            image = new ImageIcon(getClass().getResource("Pocetak.PNG")).getImage();
             g2.drawImage(image, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, null);
+            g2.setFont(new Font("comicsans", Font.BOLD, 30));
+            g2.setColor(Color.WHITE);
+            g2.drawString(message, 10, 150);
+
         }
     }
 
     private void update() {
-        riba.move();
-        
-        int d = prepreke.size();
+        fish.move();
+
+        int d = obstacles.size();
         for (int i = 0; i < d; i++) {
-            prepreke.get(i).move();
+            obstacles.get(i).move();
         }
         for (int i = 0; i < d; i++) {
-            if(prepreke.get(i).vrijednostx()==riba.x)
-                score+=1;
-    }
-    
-    }
-    
-    private void addObstacle() {
-        prepreke.add(new Prepreka(this));
-    }
-    
-    private void detectCollision() {
-        int d = prepreke.size();
-        for (int i = 0; i < d; i++) {
-            if(prepreke.get(i).intersectsWithFish(riba))
-                stopGame();
+            if (obstacles.get(i).valueX() == fish.x) {
+                score += 1;
+            }
         }
-        
-        
+
     }
 
+    private void addObstacle() {
+        obstacles.add(new Obstacle(this));
+    }
+
+    private void detectCollision() {
+        int d = obstacles.size();
+        for (int i = 0; i < d; i++) {
+            if (obstacles.get(i).intersectsWithFish(fish)) {
+                stopGame();
+            }
+        }
+
+    }
 
     @Override
     public void run() {
@@ -150,11 +154,11 @@ public class Board extends JPanel implements Runnable {
             if (inGame && !paused) {
                 frames++;
 
-                if (frames == 40) {
+                if (frames == 50) {
                     addObstacle();
-                    frames = 0; 
+                    frames = 0;
                 }
-               
+
                 update();
                 detectCollision();
                 repaint();
@@ -170,16 +174,27 @@ public class Board extends JPanel implements Runnable {
 
     void startGame() {
         inGame = true;
-        riba = new Riba(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
-        prepreke = new ArrayList<>();
+        fish = new Fish(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
+        obstacles = new ArrayList<>();
         frames = 0;
-        score=0;
+        score = 0;
+
+        message = "Use SPACE for jump ";
+        Timer deathTimer = new Timer(3000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                message = "";
+            }
+        ;
+        });
+ 		deathTimer.start();
         repaint();
     }
 
     public void stopGame() {
         inGame = false;
-        paused=true;
+        message = ("You won " + score + " points");
+        paused = true;
     }
 
     private class GameKeyAdapter extends KeyAdapter {
@@ -187,9 +202,9 @@ public class Board extends JPanel implements Runnable {
         @Override
         public void keyPressed(KeyEvent e) {
             int keyCode = e.getKeyCode();
-            
+
             if (keyCode == KeyEvent.VK_SPACE) {
-                riba.moveUp();
+                fish.moveUp();
                 paused = false;
             }
         }
