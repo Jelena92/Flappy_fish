@@ -2,7 +2,6 @@ package igrica;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -182,14 +181,61 @@ public class Board extends JPanel implements Runnable {
 
     }
 
-    public void read() throws IOException {
-        try (BufferedReader in = new BufferedReader(new FileReader("src/igrica/saveFile.txt"))) {
-            String line;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
+    
+    public void readTextFileLineByLine() {
+        FileReader in = null;
+        //BufferedReader dozvoljava čitanje većeg "komada" datoteke odjednom.
+        BufferedReader bin = null;
+
+        try {
+
+            File file = new File("src/igrica/saveFile.txt");
+
+            in = new FileReader(file);
+            // Za inicijalizaciju, BufferedReader zahtjeva otvoren FileReader tok
+            bin = new BufferedReader(in);
+
+            String data;
+            ArrayList<String> rijeci = new ArrayList<>();
+
+            /*
+             * Metoda readLine klase BufferedReader učitava jedan red teksta iz
+             * datoteke. Vraća null ukoliko dođe do kraja datoteke.
+             */
+            while ((data = bin.readLine()) != null) {
+                rijeci.add(data);
+            }
+            int d = rijeci.size();
+
+            String stringing = "";
+            for (int i = 0; i < d; i++) {
+                stringing += (i + 1) + ": " + rijeci.get(i) + "\n";
+
+            }
+
+            JOptionPane.showMessageDialog(null, stringing, "Results", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, ex.toString());
+        } finally {
+            if (bin != null) {
+                try {
+                    bin.close();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, ex.toString());
+                }
+            }
+
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, ex.toString());
+                }
             }
         }
     }
+
 
     @Override
     public void run() {
@@ -221,7 +267,7 @@ public class Board extends JPanel implements Runnable {
         obstacles = new ArrayList<>();
         frames = 0;
         score = 0;
-
+        framesBetweenObstacles=50;
         playerName = JOptionPane.showInputDialog(null, "Please, enter your name:", "Flappy fish", JOptionPane.INFORMATION_MESSAGE);
 
         inGame = true;
@@ -236,7 +282,7 @@ public class Board extends JPanel implements Runnable {
         });
  	deathTimer.start();
 
-        if (playerName == null || playerName == "") {
+        if (playerName == null || "".equals(playerName)) {
             playerName="Nepoznat";
         }
         repaint();
@@ -288,6 +334,15 @@ public class Board extends JPanel implements Runnable {
         }
 
         paused = true;
+    }
+    
+    
+    public void Help() {
+        JOptionPane.showMessageDialog(null,
+                "The point of the game is to keep the bird in flight while crossing a series of obstacles.\n \n"
+                + "You have to use SPACE to keep the bird in flight\n\n"
+                + "If you want a break, you will press P on the keyboard.",
+                "Instructions", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private class GameKeyAdapter extends KeyAdapter {

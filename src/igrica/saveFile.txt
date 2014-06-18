@@ -6,10 +6,5 @@ Branka - 9
 jelena - 4
 jelena - 0
 aljosa - 0
-aljosa - 3
-Nepoznat - 2
- - 1
- - 5
- - 2
- - 5
-jelena - 11
+jelena - 0
+Nepoznat - 3

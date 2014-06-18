@@ -46,11 +46,9 @@ public class Frame extends JFrame{
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    board.read();
-                } catch (IOException ex) {
-                    Logger.getLogger(Frame.class.getName()).log(Level.SEVERE, null, ex);
-                }
+               
+                    board.readTextFileLineByLine();
+                
             }
         });
         JMenuItem newGame = new JMenuItem("New game");
@@ -61,9 +59,19 @@ public class Frame extends JFrame{
                 board.startGame();
             }
         });
+        
+        JMenuItem help = new JMenuItem("Instructions");
+         help.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                board.Help();
+            }
+        });
         // Dodamo stavku u meni
         gameMenu.add(newGame);
         gameMenu.add(results);
+        gameMenu.add(help);
         
         // Dodamo meni u liniju menija
         menuBar.add(gameMenu);
