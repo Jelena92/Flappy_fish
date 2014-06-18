@@ -3,5 +3,13 @@ Ranko - 3
 Janko - 1
 Marko - 3
 Branka - 9
-Jelena - 4
-Jelena - 1
+jelena - 4
+jelena - 0
+aljosa - 0
+aljosa - 3
+Nepoznat - 2
+ - 1
+ - 5
+ - 2
+ - 5
+jelena - 11

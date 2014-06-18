@@ -50,7 +50,7 @@ public class Fish {
     }
 
     public Rectangle2D.Double getBounds() {
-        return new Rectangle2D.Double(x, y, w, h);
+        return new Rectangle2D.Double(x, y+10, w, h-20);
     }
 
     public void moveUp() {

@@ -63,9 +63,11 @@ public class Board extends JPanel implements Runnable {
     Boolean inGame;
     Boolean paused;
     static int score = 0;
-    private String playerName;
+    private String playerName = "";
 
     long frames;
+    int framesBetweenObstacles = 50;
+    final int minFBO = 30;
 
     // Objekti u igri
     Fish fish;
@@ -157,6 +159,10 @@ public class Board extends JPanel implements Runnable {
         for (int i = 0; i < d; i++) {
             if (obstacles.get(i).valueX() == fish.x) {
                 score += 1;
+                
+                if(score>3 && score%2==0 && minFBO < framesBetweenObstacles)
+                    framesBetweenObstacles-= 5;
+                        
             }
         }
 
@@ -191,8 +197,8 @@ public class Board extends JPanel implements Runnable {
         while (true) {
             if (inGame && !paused) {
                 frames++;
-
-                if (frames == 50) {
+                
+                if (frames == framesBetweenObstacles) {
                     addObstacle();
                     frames = 0;
                 }
@@ -211,7 +217,6 @@ public class Board extends JPanel implements Runnable {
     }
 
     void startGame() {
-        inGame = true;
         fish = new Fish(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
         obstacles = new ArrayList<>();
         frames = 0;
@@ -219,7 +224,9 @@ public class Board extends JPanel implements Runnable {
 
         playerName = JOptionPane.showInputDialog(null, "Please, enter your name:", "Flappy fish", JOptionPane.INFORMATION_MESSAGE);
 
-        message = "Use SPACE for jump ";
+        inGame = true;
+        
+        message = "Use SPACE for jump";
         Timer deathTimer = new Timer(3000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -227,10 +234,10 @@ public class Board extends JPanel implements Runnable {
             }
         ;
         });
- 		deathTimer.start();
+ 	deathTimer.start();
 
-        if (playerName == null) {
-            stopGame();
+        if (playerName == null || playerName == "") {
+            playerName="Nepoznat";
         }
         repaint();
     }
