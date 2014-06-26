@@ -19,25 +19,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import static java.lang.System.in;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.Timer;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -53,7 +41,9 @@ public class Board extends JPanel implements Runnable {
      * Visina table
      */
     public final int PANEL_HEIGHT = 600;
-
+    /**
+     * Boja pozadine
+     */
     final Color BACKGROUND_COLOR = Color.CYAN;
     final Thread runner;
     static String message = "";
@@ -72,11 +62,10 @@ public class Board extends JPanel implements Runnable {
     Fish fish;
     ArrayList<Obstacle> obstacles;
     private Component frame;
-    
 
     /**
      * Podrazumjevani konstruktor. Postavlja veličinu table, boju pozadine i
-     * font, inicijalizuje početni rezultat, te objekte u igri. Inicijalizuje i
+     * font,inicijalizuje objekte u igri. Inicijalizuje i
      * pokreće radnu nit.
      */
     public Board() {
@@ -99,6 +88,12 @@ public class Board extends JPanel implements Runnable {
         runner.start();
     }
 
+    /**
+     * Metoda paint služi za iscrtavanje. Ova metoda iscrtava razlicite objekte,
+     * u zavisnosti da li je igra aktivna ili ne. Ukoliko je igra aktivna, tj.
+     * inGame = true iscrtava se teran, pozadina, objekti u igri, u suprotnom
+     * iscrtava se pocetna slika.
+     */
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -118,15 +113,16 @@ public class Board extends JPanel implements Runnable {
             g2.drawImage(image, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, null);
 
             // Iscrtaj sve objekte
+            //iscrtavanje ribe
             fish.draw(g2);
-
+            // Iscrtavanje prepreka
             int d = obstacles.size();
             for (int i = 0; i < d; i++) {
                 obstacles.get(i).draw(g2);
             }
 
             //Font kojim se ispisuje text na ekranu           
-            g2.setFont(new Font("comicsans", Font.PLAIN, 30));
+            g2.setFont(new Font("comicsans", Font.BOLD, 30));
             g2.setColor(Color.WHITE);
             g2.drawString(" Score: " + score, 30, 40);
             g2.drawString(" Name : " + playerName, 30, 65);
@@ -141,16 +137,19 @@ public class Board extends JPanel implements Runnable {
         } else {
             image = new ImageIcon(getClass().getResource("Pocetak.PNG")).getImage();
             g2.drawImage(image, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, null);
-            g2.setFont(new Font("comicsans", Font.BOLD, 30));
-            g2.setColor(Color.WHITE);
-            g2.drawString(message, 10, 150);
 
         }
     }
 
+    /**
+     *Metoda koja poziva metodu move za kretanje ribe i move za kretanje prepreka,
+     * zatim povecava skor za jedan ukoliko riba prođe između prepreka,
+     * te smanjuje razmak između prepreka nakon dovoljnog broja bodova.
+     */
     private void update() {
+        //Poziva se metoda move() iz klase Fish
         fish.move();
-
+        //Poziva se metoda move() iz klase Obstacles
         int d = obstacles.size();
         for (int i = 0; i < d; i++) {
             obstacles.get(i).move();
@@ -158,19 +157,27 @@ public class Board extends JPanel implements Runnable {
         for (int i = 0; i < d; i++) {
             if (obstacles.get(i).valueX() == fish.x) {
                 score += 1;
-                
-                if(score>3 && score%2==0 && minFBO < framesBetweenObstacles)
-                    framesBetweenObstacles-= 5;
-                        
+
+                if (score > 10 && score % 5 == 0 && minFBO < framesBetweenObstacles) {
+                    framesBetweenObstacles -= 5;
+                }
+
             }
         }
-
     }
 
+    /**
+     * Metoda čijim pozivom se dodaju nove prepreke
+     */
     private void addObstacle() {
         obstacles.add(new Obstacle(this));
     }
 
+    /**
+     * Metoda koja ispituje da li je riba udarila o prepreke. Ukoliko jeste,
+     * igra se zaustavlja. Preklapanje Ribe i prepreka je opisano u metodi
+     * intersectWithFish
+     */
     private void detectCollision() {
         int d = obstacles.size();
         for (int i = 0; i < d; i++) {
@@ -181,7 +188,10 @@ public class Board extends JPanel implements Runnable {
 
     }
 
-    
+    /**
+     * Metoda koja učitava sadržaj tekstualne datoteke "saveFile.txt" u listu
+     * stringova. Učitavanje se vrši liniju po liniju.
+     */
     public void readTextFileLineByLine() {
         FileReader in = null;
         //BufferedReader dozvoljava čitanje većeg "komada" datoteke odjednom.
@@ -236,14 +246,18 @@ public class Board extends JPanel implements Runnable {
         }
     }
 
-
+    /**
+     * Metoda koja provjerava da li je igra aktivna, Ako jeste vrsi se dodavanje
+     * novih okvira sve do oređenog broje, kada se doda nova prepreka. Poziva
+     * metodu update() i detectCollision(), a zatim vrši ponovno iscrtavanje.
+     */
     @Override
     public void run() {
 
         while (true) {
             if (inGame && !paused) {
                 frames++;
-                
+
                 if (frames == framesBetweenObstacles) {
                     addObstacle();
                     frames = 0;
@@ -262,16 +276,22 @@ public class Board extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Metoda koja se poziva prilikom svakog novog igranja igre. U ovoj metodi
+     * se prave novi objekti klase fish, te obstacles, vrijednost skora i
+     * okvirova se postavlja na nula, zatim se inicijalizuje inGame = true
+     */
     void startGame() {
         fish = new Fish(this, PANEL_WIDTH / 4, PANEL_HEIGHT / 3);
         obstacles = new ArrayList<>();
         frames = 0;
         score = 0;
-        framesBetweenObstacles=50;
+        framesBetweenObstacles = 50;
         playerName = JOptionPane.showInputDialog(null, "Please, enter your name:", "Flappy fish", JOptionPane.INFORMATION_MESSAGE);
 
         inGame = true;
-        
+
+        //Ispisivanje poruke na ekranu, gdje poruka ostaje ispisana 3000 milisekundi
         message = "Use SPACE for jump";
         Timer deathTimer = new Timer(3000, new ActionListener() {
             @Override
@@ -281,16 +301,19 @@ public class Board extends JPanel implements Runnable {
         ;
         });
  	deathTimer.start();
-
+        /**
+         * provjerava unos podatka u JOptionPanel. Ako korisnik ne unese ime,
+         * ono se samo generise na "" Nepoznat
+         */
         if (playerName == null || "".equals(playerName)) {
-            playerName="Nepoznat";
+            playerName = "Nepoznat";
         }
         repaint();
     }
 
     //Čuvanje razultata u datoteci
     private void save_file(String name_fale, List<String> scores) throws IOException {
-        File file = new File(name_fale);
+        File file = new File(name_fale);//kreiranje nove datoteke
         if (!file.exists()) { //Ako ne postoji datoteka, kreirati je
             file.createNewFile();
         }
@@ -320,8 +343,11 @@ public class Board extends JPanel implements Runnable {
         return scores;
     }
 
-   
-
+    /**
+     * Metoda u kojoj postavljamo inGame = false. Igra se zaustavlja i prikazuje
+     * se prozor sa ostvarenim rezultatom igrača. Taj rezultat se sačuvava u
+     * saveFile.txt dokument.
+     */
     public void stopGame() {
         inGame = false;
         JOptionPane.showMessageDialog(frame, "" + playerName + " won " + score + " points.", "Flappy fish", JOptionPane.INFORMATION_MESSAGE);
@@ -335,8 +361,10 @@ public class Board extends JPanel implements Runnable {
 
         paused = true;
     }
-    
-    
+
+    /**
+     * Metoda koja daje dodatna objašnjenja u igri
+     */
     public void Help() {
         JOptionPane.showMessageDialog(null,
                 "The point of the game is to keep the bird in flight while crossing a series of obstacles.\n \n"
